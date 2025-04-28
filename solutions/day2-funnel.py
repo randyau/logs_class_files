@@ -1,12 +1,13 @@
 import csv
 import gzip
 
-reader = csv.reader(gzip.open('datasets/simulated_web_log.csv.gz','rt'))
-next(reader)
+reader = csv.reader(gzip.open('../datasets/simulated_web_log.csv.gz','rt'))
+next(reader) #skip header row
 funnels = {} # holds [add_to_cart, go_to_checkout, purchase_complete]
 for session_id, user_id, ts, event_type, event_name, url in reader:
     if event_name in ['add_to_cart','go_to_checkout','purchase_complete']:
       user_funnel = funnels.setdefault(user_id, [None, None, None])
+      # NOTE: we place one funnel entry per user. This cuts down on any "super successful users" skewing metrics
       if event_name == 'add_to_cart' and user_funnel[0] == None:
           user_funnel[0]=ts
         #we ONLY allow the next event if its timestamp is later than the previous funnel step
